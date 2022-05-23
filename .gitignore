@@ -1,0 +1,10 @@
+node_modules
+example
+example-test
+test
+
+.backs
+.ideas
+
+package-lock.json
+pdfkit-guide.pdf

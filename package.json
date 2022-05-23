@@ -1,0 +1,40 @@
+{
+  "name": "pdfkit-table-ts",
+  "version": "0.0.01",
+  "description": "PdfKit Table. Helps to draw informations in simple tables using pdfkit. #server-side. Generate pdf tables with javascript (PDFKIT plugin) ",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -p . -w",
+    "git-push": "git add . && git commit -m 'update' && git push "
+  },
+  "repository": "git+https://github.com/natancabral/pdfkit-table.git",
+  "author": "natancabral",
+  "keywords": [
+    "ts",
+    "typescript",
+    "javascript",
+    "node",
+    "nodejs",
+    "node pdf",
+    "pdf",
+    "pdfkit",
+    "table",
+    "pdfkit table",
+    "pdfkit-table"
+    "pdfkit-table-ts"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/natancabral/pdfkit-table-ts/issues"
+  },
+  "homepage": "https://github.com/natancabral/pdfkit-table-ts#readme",
+  "dependencies": {
+    "pdfkit": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.34",
+    "@types/pdfkit": "^0.12.6"
+  },
+}

@@ -1,0 +1,14 @@
+node_modules
+example-test
+example
+src
+
+.backs
+.ideas
+.gitignore
+
+yarn.lock
+package-lock.json
+pdfkit-guide.pdf
+pdfkit-table.zip
+tsconsfig.json
