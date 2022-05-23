@@ -9,7 +9,7 @@
     "dev": "tsc -p . -w",
     "git-push": "git add . && git commit -m 'update' && git push "
   },
-  "repository": "git+https://github.com/natancabral/pdfkit-table.git",
+  "repository": "git+https://github.com/natancabral/pdfkit-table-ts.git",
   "author": "natancabral",
   "keywords": [
     "ts",
