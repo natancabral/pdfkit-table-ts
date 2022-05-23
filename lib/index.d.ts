@@ -57,8 +57,8 @@ declare class PDFDocument extends PDFDocumentSource {
     prepareCellPadding(p: number | number[]): Padding;
     addPageAsync(): Promise<void>;
     pageAddedFire(): Promise<void>;
-    createFill(rect: Rect, fillColor?: string, fillOpacity?: number, callback?: Function): Promise<unknown>;
-    addBackground: (rect: Rect, fillColor?: string | undefined, fillOpacity?: number | undefined, callback?: Function | undefined) => Promise<unknown>;
+    createFill(rect: Rect, fillColor?: string, fillOpacity?: number): Promise<void>;
+    addBackground: (rect: Rect, fillColor?: string | undefined, fillOpacity?: number | undefined) => Promise<void>;
     createDivider(type: string, x: number, y: number, strokeWidth?: number, strokeOpacity?: number, strokeDisabled?: boolean, strokeColor?: string): void;
     createTitles(): Promise<unknown>;
     createTitle(data: string | Title | undefined, size?: number, opacity?: number, isTitle?: boolean): Promise<void>;

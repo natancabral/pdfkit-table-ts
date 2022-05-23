@@ -558,7 +558,7 @@ class PDFDocument extends PDFDocumentSource
 
   // Row fill (background header, cells and rows)
   // ------------------------------------------------------------------
-  createFill(rect: Rect, fillColor?: string, fillOpacity?: number, callback?: Function) 
+  createFill(rect: Rect, fillColor?: string, fillOpacity?: number): Promise<void>
   {
     this.logg('createFill');
     return new Promise((resolve, reject) => 
@@ -589,9 +589,9 @@ class PDFDocument extends PDFDocumentSource
         // back to saved style
         this.restore();
         // callback
-        typeof callback === 'function' && callback(this);
+        // typeof callback === 'function' && callback(this);
         // done
-        resolve(this);
+        resolve();
       } 
       catch (error) 
       {
@@ -980,6 +980,7 @@ class PDFDocument extends PDFDocumentSource
       let elm; // element line
       let text;
       let padding: Padding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
+      let fill: IFillAndOpacity = { opacity: undefined, fill: undefined };
 
       // style
       await this.pdfkitTableCache.options?.prepareRow?.(null);
@@ -1053,8 +1054,22 @@ class PDFDocument extends PDFDocumentSource
 
           // // console.log(rectRow, rectCell, this.positionX, this.x, this.positionY, this.y);
           
-          // fill cell
-          this.createFill(rectCell); // colIndex % 2 ? 'grey' : 'green', 0.2);
+          // Block - fill
+          // ----------------------------------------------------
+          // ############################## BACKGROUND
+          // ############################## BACKGROUND
+          // ############################## BACKGROUND
+          if(this.isHeaderString === false)
+          {  
+            // style column by header
+            fill = this.prepareRowFillOptionsData(this.pdfkitTableCache.headers[colIndex]);
+            fill.fill && await this.createFill(rectCell, fill.fill, fill.opacity);
+          }
+          // ############################## BACKGROUND
+          // ############################## BACKGROUND
+          // ############################## BACKGROUND
+          // ----------------------------------------------------
+
           // style
           this.pdfkitTableCache.options?.prepareRow?.(elm, colIndex, rowIndex, rectRow, rectCell);
           // write
@@ -1200,7 +1215,7 @@ class PDFDocument extends PDFDocumentSource
           if(colIndex === 0) 
           {
             fill = Object(this.prepareRowFillOptionsData(elm));
-            fill.fill && this.createFill(rectCell, fill.fill, fill.opacity);
+            fill.fill && await this.createFill(rectCell, fill.fill, fill.opacity);
           }
           // style fill cell
           if(typeof elm[property] === 'object') // TODO: remove
@@ -1211,14 +1226,14 @@ class PDFDocument extends PDFDocumentSource
               // set font style
               this.prepareRowOptions(elm[property]);
               fill = this.prepareRowFillOptionsData(elm[property]);
-              fill.fill && this.createFill(rectCell, fill.fill, fill.opacity);
+              fill.fill && await this.createFill(rectCell, fill.fill, fill.opacity);
             }
           } 
           else 
           {  
             // style column by header
             fill = this.prepareRowFillOptionsData(this.pdfkitTableCache.headers[colIndex]);
-            fill.fill && this.createFill(rectCell, fill.fill, fill.opacity);
+            fill.fill && await this.createFill(rectCell, fill.fill, fill.opacity);
           }
           // ############################## BACKGROUND
           // ############################## BACKGROUND
