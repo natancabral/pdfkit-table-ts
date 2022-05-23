@@ -1,10 +1,10 @@
-node_modules
-example
-example-test
-test
-
 .backs
 .ideas
+example-test
+example
+node_modules
 
 package-lock.json
 pdfkit-guide.pdf
+pdfkit-table-ts.zip
+yarn.lock

@@ -1,4 +1,5 @@
 # pdfkit-table-ts
+
 TypeScript - Helps to draw informations in simple tables using pdfkit. #server-side. Generate pdf tables with javascript (PDFKIT plugin) 
 
 ```js
@@ -57,38 +58,26 @@ const doc = new PDFDocument({
 
 ```
 
-#### base64 for pdfkit:
-```js
-import * as PDFDocument from 'pdfkit'
-import getStream from 'get-stream'
+## License
 
-const pdf = {
-  createPdf: async (text: string) => {
-    const doc = new PDFDocument()
-    doc.fontSize(10).text(text, 50, 50)
-    doc.end()
+The MIT License.
 
-    const data = await getStream.buffer(doc)
-    let b64 = Buffer.from(data).toString('base64')
-    return b64
-  }
-}
+## Author
 
-export default pdf
+<table>
+  <tr>
+    <td>
+      <img src="https://github.com/natancabral.png?s=100" width="100"/>
+    </td>
+    <td>
+      Natan Cabral<br />
+      <a href="mailto:natancabral@hotmail.com">natancabral@hotmail.com</a><br />
+      <a href="https://github.com/natancabral/">https://github.com/natancabral/</a>
+    </td>
+  </tr>
+</table>
 
-// --or--
+## Thank you
 
-const PDFDocument = require('pdfkit')
-const getStream = require('get-stream')
-
-const pdf = () => {
-  const doc = new PDFDocument()
-  doc.text('Hello, World!')
-  doc.end()
-  return await getStream.buffer(doc)
-}
-
-// Caller could do this:
-const pdfBuffer = await pdf()
-const pdfBase64string = pdfBuffer.toString('base64')
-```
+- pdfkit - [pdfkit](https://www.npmjs.com/package/pdfkit)
+- ideas - [giuseppe-santoro](https://github.com/foliojs/pdfkit/issues/29#issuecomment-56504943)

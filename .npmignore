@@ -1,14 +1,14 @@
-node_modules
-example-test
-example
-src
-
 .backs
 .ideas
+example-test
+example
+node_modules
+src
+
 .gitignore
 
-yarn.lock
 package-lock.json
 pdfkit-guide.pdf
-pdfkit-table.zip
+pdfkit-table-ts.zip
 tsconsfig.json
+yarn.lock
