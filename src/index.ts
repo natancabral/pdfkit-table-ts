@@ -1379,11 +1379,11 @@ class PDFDocument extends PDFDocumentSource
             // variables
             let safeHeight  = this.pdfkitTableCache.safelyPageHeight - this.headerHeight - (this.pdfkitTableCache.distanceCorrection * 4);
             let percent     = heightCompute / (safeHeight) + 0.01; // 0.3 safe
-            let fitHeight   = safeHeight; // - this.page.margins.top; //heightCompute / percent;
-            let lenTextTest = text.length / percent - 70; // 50
+            let lenTextTest = text.length / percent - 50; // 50
             let fitValue    = '';
+            let fitHeight   = 0;
 
-            // console.log('BBBB', fitHeight, safeHeight, percent);
+            // console.log(this.page.height, safeHeight, percent, lenTextTest);
 
             // // console.log('fitHeight', fitHeight, percent)
 
@@ -1405,7 +1405,7 @@ class PDFDocument extends PDFDocumentSource
             for(let ilen = 0; ilen < maxLoop; ilen++) {
 
               lenTextTest = lenTextTest + (10 * ilen);
-              lenTextTest = (lenTextTest > text.length ? text.length: lenTextTest) -7;
+              lenTextTest = (lenTextTest > text.length ? text.length : lenTextTest) - 7;
               const fitValueTest = String(text).substring(0, lenTextTest);
               let heightComputeFit = this.heightOfString(fitValueTest, 
               {
@@ -1415,17 +1415,20 @@ class PDFDocument extends PDFDocumentSource
               });
 
               // add header padding
-              heightComputeFit += (padding.top + padding.bottom); 
-              // console.log('>>', heightComputeFit, fitHeight, safeHeight);
+              heightComputeFit += (top + bottom) + (padding.top + padding.bottom); 
 
-              if(heightComputeFit < fitHeight) {
-                // console.log('no break', fitValueTest);
-                fitValue = fitValueTest;
-                fitHeight = heightComputeFit;
-              } else {
-                // console.log('break');
-                ilen = maxLoop;
+              // console.log( ilen + '>', safeHeight, heightComputeFit, fitHeight);
+
+              if(heightComputeFit === fitHeight || fitHeight > heightComputeFit)
+              {
+                ilen = maxLoop; 
               }
+              else
+              {
+                fitValue = fitValueTest;
+                // fitValue  = fitValueTest.substring(0, lenTextTest - 7); // ??? (FIX break line, no bad solution performance)
+                fitHeight = heightComputeFit;
+              } 
             }
       
             // // console.log(heightComputeFit, fitHeight, safeHeight, this.page.height, heightCompute, percent);
@@ -1515,8 +1518,6 @@ class PDFDocument extends PDFDocumentSource
         const { property } = Object(this.pdfkitTableCache.headers[i]);
         padding = Object(this.headerPadding[i]);
 
-        // // console.log('A', i, padding, left, top, right, bottom);
-
         // value
         text = row[property];
         typeof text === 'object' && (text = text.label || '');
@@ -1532,8 +1533,6 @@ class PDFDocument extends PDFDocumentSource
         
         // stay max height
         height = Math.max(height, heightCompute + (padding.top + padding.bottom));
-
-        // // console.log('B', heightCompute, this.columnSizes[i], height);
 
         // register long text
         if(preventLongText)
@@ -1585,21 +1584,20 @@ class PDFDocument extends PDFDocumentSource
                 align,
               });
 
-              // // console.log('C', heightComputeFit);
-
               // add header padding
-              heightComputeFit += (padding.top + padding.bottom); 
+              heightComputeFit += (top + bottom) + (padding.top + padding.bottom); 
 
-              // // console.log('D', heightComputeFit);
+              // console.log( ilen + '>', safeHeight, heightComputeFit, fitHeight);
 
-              if(heightComputeFit < fitHeight) 
+              if(heightComputeFit === fitHeight || fitHeight > heightComputeFit)
+              {
+                ilen = maxLoop; 
+              }
+              else
               {
                 fitValue = fitValueTest;
-                // console.log('E', fitValue);
-              } 
-              else 
-              {
-                ilen = maxLoop;
+                // fitValue  = fitValueTest.substring(0, lenTextTest - 7); // ??? (FIX break line, no bad solution performance)
+                fitHeight = heightComputeFit;
               }
             }
       

@@ -6,14 +6,14 @@ TypeScript - Helps to draw informations in simple tables using pdfkit. #server-s
 const fs = require("fs");
 const { PDFDocument } = require("pdfkit-table-ts");
 
-const doc = new PDFDocument({
+const let = new PDFDocument({
   margin: 30, 
 });
 
 ;(async function(){
  
   // to save on server
-  doc.pipe(fs.createWriteStream("./example-1.pdf"));
+  doc.pipe(fs.createWriteStream("./docment.pdf"));
 
   // -----------------------------------------------------------------------------------------------------
   // Simple Table with Array
