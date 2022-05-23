@@ -163,7 +163,7 @@ class PDFDocument extends PDFDocumentSource
   // Contructor
   // ------------------------------------------------------------------
 
-  constructor(option?: any) 
+  constructor(option: any = {}) 
   {
     super(option);
     this.opt = option;
@@ -531,7 +531,7 @@ class PDFDocument extends PDFDocumentSource
   // Add page event
   // ------------------------------------------------------------------
   // event emitter
-  pageAddedFire()
+  async pageAddedFire()
   {
     // +1
     this.pdfkitTableCache.table.pages += 1;
@@ -553,7 +553,7 @@ class PDFDocument extends PDFDocumentSource
 
     // const { headers } = this.pdfkitTableCache;
     // this.createHeader({ headers });  
-    // this.createHeader();  
+    // await this.createHeader();  
   };
 
   // Row fill (background header, cells and rows)
@@ -681,8 +681,9 @@ class PDFDocument extends PDFDocumentSource
         subtitle  || (subtitle = this.pdfkitTableCache.options.subtitle);
 
         // calc
-        const calc: number = await this.calcTitleSubtitleHeaderAndFirstLine();        
-        if(this.calcLimitCellOnPage(this.y, calc))
+        const calc: number = await this.calcTitleSubtitleHeaderAndFirstLine();      
+        // console.log(calc);  
+        if(this.calcLimitCellOnPage(0, calc))
         {
           // console.log('calcLimitCellOnPage');
           this.doNotCreateHeader = true;
@@ -854,7 +855,7 @@ class PDFDocument extends PDFDocumentSource
         // // --------------------------------------------------------------------------------
         // // --------------------------------------------------------------------------------
 
-        this.headerHeightAndFirstLineAndTitleCalc = await this.calcTitleSubtitleHeaderAndFirstLine() + this.positionY;
+        this.headerHeightAndFirstLineAndTitleCalc = await this.calcTitleSubtitleHeaderAndFirstLine();
 
         // content is big text (crazy!)
         if(this.headerHeightAndFirstLine > this.pdfkitTableCache.safelyPageY) 
@@ -1677,16 +1678,12 @@ class PDFDocument extends PDFDocumentSource
         }
     
         // calc if header + first line fit on last space page
-        this.headerHeightAndFirstLineAndTitleCalc = 0 +
-          // this.positionY + // last y position
+        this.headerHeightAndFirstLineAndTitleCalc =
           this.titleHeight +
           this.subtitleHeight +
           this.headerHeightAndFirstLine + // + first line height
-          this.headerHeight; // + header height 
-
-          // console.log('headerHeightAndFirstLineAndTitleCalc', this.headerHeightAndFirstLineAndTitleCalc);
-    
-        // // console.log('headerHeightAndFirstLine', this.headerHeightAndFirstLine, this.headerHeightAndFirstLineAndTitleCalc)
+          this.headerHeight + // + header height 
+          (this.pdfkitTableCache.distanceCorrection * 2); // space between titles and lines
     
         resolve(this.headerHeightAndFirstLineAndTitleCalc);
         return;
@@ -1703,6 +1700,10 @@ class PDFDocument extends PDFDocumentSource
   // ------------------------------------------------------------------
   calcLimitCellOnPage(y: number, height: number) 
   {
+    if(y === 0)
+    {
+      y = Math.max(this.y, this.positionY);
+    }
     // this.y
     return (y + height >= this.pdfkitTableCache.safelyPageY);
   }
@@ -1824,6 +1825,5 @@ class PDFDocument extends PDFDocumentSource
 
 }
 
-// module.exports = PDFDocument;
 export default PDFDocument;
 export { PDFDocument };

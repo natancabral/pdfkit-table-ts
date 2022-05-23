@@ -56,3 +56,39 @@ const doc = new PDFDocument({
 })();
 
 ```
+
+#### base64 for pdfkit:
+```js
+import * as PDFDocument from 'pdfkit'
+import getStream from 'get-stream'
+
+const pdf = {
+  createPdf: async (text: string) => {
+    const doc = new PDFDocument()
+    doc.fontSize(10).text(text, 50, 50)
+    doc.end()
+
+    const data = await getStream.buffer(doc)
+    let b64 = Buffer.from(data).toString('base64')
+    return b64
+  }
+}
+
+export default pdf
+
+// --or--
+
+const PDFDocument = require('pdfkit')
+const getStream = require('get-stream')
+
+const pdf = () => {
+  const doc = new PDFDocument()
+  doc.text('Hello, World!')
+  doc.end()
+  return await getStream.buffer(doc)
+}
+
+// Caller could do this:
+const pdfBuffer = await pdf()
+const pdfBase64string = pdfBuffer.toString('base64')
+```
