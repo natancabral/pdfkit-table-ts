@@ -3,7 +3,7 @@ TypeScript - Helps to draw informations in simple tables using pdfkit. #server-s
 
 ```js
 const fs = require("fs");
-const { PDFDocument } = require("./../lib/index");
+const { PDFDocument } = require("pdfkit-table-ts");
 
 const doc = new PDFDocument({
   margin: 30, 
@@ -49,7 +49,7 @@ const doc = new PDFDocument({
       top: 1, bottom: 1, left: 5, right: 5, 
     },
   };
-  
+
   await doc.table(table, options);
   doc.end();
  
