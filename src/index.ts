@@ -51,7 +51,6 @@ PDFDocument
 // }
 
 const PDFDocumentSource = require("pdfkit");
-import { rejects } from "assert";
 import { Data, DataOptions, Divider, DividerOptions, Header, ObjectData, Options, Padding, Rect, Table, Title } from "./types";
 
 export interface IFillAndOpacity
@@ -120,7 +119,6 @@ interface IPdfkitTableCache {
 
 class PDFDocument extends PDFDocumentSource 
 {
-
   // variables
   pdfkitTableCache: IPdfkitTableCache = {
     // cache
@@ -276,7 +274,7 @@ class PDFDocument extends PDFDocumentSource
     p.length && (this.columnPositions = p);
     this.pdfkitTableCache.table.width = w;
 
-    // console.log(w, h, p);
+    // // console.log(w, h, p);
   }
   
   // Prepare table data
@@ -686,7 +684,7 @@ class PDFDocument extends PDFDocumentSource
         const calc: number = await this.calcTitleSubtitleHeaderAndFirstLine();        
         if(this.calcLimitCellOnPage(this.y, calc))
         {
-          console.log('calcLimitCellOnPage');
+          // console.log('calcLimitCellOnPage');
           this.doNotCreateHeader = true;
           await this.addPageAsync();
         }
@@ -795,7 +793,7 @@ class PDFDocument extends PDFDocumentSource
     {
       try 
       {
-        console.log('Start Header');
+        // console.log('Start Header');
 
         // variables
         const { top, right, left } = Object(this.pdfkitTableCache.options.padding);
@@ -851,7 +849,7 @@ class PDFDocument extends PDFDocumentSource
         //   this.headerHeight; // + header height 
         //   // this.pdfkitTableCache.safelyMarginBottomHeight; // + safe margin
 
-        // // console.log('headerHeightAndFirstLine', this.headerHeightAndFirstLine, this.headerHeightAndFirstLineAndTitleCalc)
+        // // // console.log('headerHeightAndFirstLine', this.headerHeightAndFirstLine, this.headerHeightAndFirstLineAndTitleCalc)
         // // --------------------------------------------------------------------------------
         // // --------------------------------------------------------------------------------
         // // --------------------------------------------------------------------------------
@@ -862,13 +860,13 @@ class PDFDocument extends PDFDocumentSource
         if(this.headerHeightAndFirstLine > this.pdfkitTableCache.safelyPageY) 
         {
           const err = 'CRAZY! This a big text on cell';
-          console.log(err);
+          // console.log(err);
           this.logg(err);
         } 
         else if(this.headerHeightAndFirstLineAndTitleCalc > this.pdfkitTableCache.safelyPageY) 
         {
           this.logg('addPage');
-          // console.log('addPage');
+          // // console.log('addPage');
           await this.addPageAsync();
           resolve();
           return;
@@ -933,7 +931,7 @@ class PDFDocument extends PDFDocumentSource
         // to global
         // this.pdfkitTableCache.table.columns = colLen;
 
-        console.log('Start Header');
+        // console.log('Start Header');
 
         // done
         resolve();        
@@ -995,7 +993,7 @@ class PDFDocument extends PDFDocumentSource
         const { height, veryLongText, haveLongText } = Object(await this.calcRowHeightString(rows[rowIndex], { isHeader: false, preventLongText: true }));
         this.rowHeight = Number(height);
 
-        // console.log('RowString', height, veryLongText, haveLongText);
+        // // console.log('RowString', height, veryLongText, haveLongText);
 
         if(haveLongText) this.logg(`CRAZY! This a big text on cell`);
 
@@ -1003,13 +1001,13 @@ class PDFDocument extends PDFDocumentSource
         // For safety, consider 1 rows margin instead of just one
         if(haveLongText || this.calcLimitCellOnPage(this.positionY, this.rowHeight))
         {
-          console.log('AddPage calc', rowIndex);
+          // console.log('AddPage calc', rowIndex);
           await this.addPageAsync();
           await this.createHeader();
         }
 
-        // console.log(this.y, 0, this.pdfkitTableCache.safelyPageHeight, this.page.height);
-        // console.log(rowIndex, 'Y position to writer ', this.positionY + this.rowHeight + 0, 
+        // // console.log(this.y, 0, this.pdfkitTableCache.safelyPageHeight, this.page.height);
+        // // console.log(rowIndex, 'Y position to writer ', this.positionY + this.rowHeight + 0, 
         // this.y + this.rowHeight + 0);
 
         // element
@@ -1033,13 +1031,13 @@ class PDFDocument extends PDFDocumentSource
             if(lt)
             {
               const { fitValue, fitHeight } = Object(lt);
-              console.log('Entrou', this.rowHeight, fitHeight, fitValue.substring(0, 2));
+              // console.log('Entrou', this.rowHeight, fitHeight, fitValue.substring(0, 2));
               // fit text
               text = fitValue;
               // row calc
               this.rowHeight = fitHeight; // this.rowHeight / percent;
               // restValue
-              // console.log(veryLongText[colIndex]);              
+              // // console.log(veryLongText[colIndex]);              
             }            
           }
           // ----------------------------------------------------
@@ -1052,14 +1050,14 @@ class PDFDocument extends PDFDocumentSource
           const rectRow  = { x: this.columnPositions[0], y: this.positionY, width: this.pdfkitTableCache.table.width, height: this.rowHeight };
           const rectCell = { ...rectRow, x: this.columnPositions[colIndex], width: this.columnSizes[colIndex] };
 
-          // console.log(rectRow, rectCell, this.positionX, this.x, this.positionY, this.y);
+          // // console.log(rectRow, rectCell, this.positionX, this.x, this.positionY, this.y);
           
           // fill cell
           this.createFill(rectCell); // colIndex % 2 ? 'grey' : 'green', 0.2);
           // style
           this.pdfkitTableCache.options?.prepareRow?.(elm, colIndex, rowIndex, rectRow, rectCell);
           // write
-          console.log('text', rowIndex, text);
+          // console.log('text', rowIndex, text);
           this.text(text, this.columnPositions[colIndex] + left + padding.left, this.positionY + top + padding.top - distance,
           {
             width: this.columnSizes[colIndex] - (left + right) - (padding.left + padding.right),
@@ -1182,7 +1180,7 @@ class PDFDocument extends PDFDocumentSource
               // row calc
               this.rowHeight = fitHeight; // this.rowHeight / percent;
               // restValue
-              // console.log(veryLongText[colIndex]);              
+              // // console.log(veryLongText[colIndex]);              
             }            
           }
           // ----------------------------------------------------
@@ -1351,8 +1349,8 @@ class PDFDocument extends PDFDocumentSource
         // register long text
         if(preventLongText)
         {
-          // console.log('preventLongText', heightCompute, this.pdfkitTableCache.safelyPageHeight);
-          console.log('AAAA', heightCompute, height);
+          // // console.log('preventLongText', heightCompute, this.pdfkitTableCache.safelyPageHeight);
+          // console.log('AAAA', heightCompute, height);
 
           // if row height is bigger 
           if(heightCompute > this.pdfkitTableCache.safelyPageHeight) 
@@ -1360,7 +1358,7 @@ class PDFDocument extends PDFDocumentSource
 
             haveLongText = true;
 
-            // console.log('Sooo big', heightCompute, this.pdfkitTableCache.safelyPageHeight);
+            // // console.log('Sooo big', heightCompute, this.pdfkitTableCache.safelyPageHeight);
 
             // variables
             let safeHeight  = this.pdfkitTableCache.safelyPageHeight - this.headerHeight - (this.pdfkitTableCache.distanceCorrection * 4);
@@ -1369,9 +1367,9 @@ class PDFDocument extends PDFDocumentSource
             let lenTextTest = text.length / percent - 70; // 50
             let fitValue    = '';
 
-            console.log('BBBB', fitHeight, safeHeight, percent);
+            // console.log('BBBB', fitHeight, safeHeight, percent);
 
-            // console.log('fitHeight', fitHeight, percent)
+            // // console.log('fitHeight', fitHeight, percent)
 
             // pt-br: veja bem, dependendo do tamanho da font esse recurso ajuda o 
             // text a não pular de página ou evitar o text ficar muito encolhido em relação 
@@ -1402,19 +1400,19 @@ class PDFDocument extends PDFDocumentSource
 
               // add header padding
               heightComputeFit += (padding.top + padding.bottom); 
-              console.log('>>', heightComputeFit, fitHeight, safeHeight);
+              // console.log('>>', heightComputeFit, fitHeight, safeHeight);
 
               if(heightComputeFit < fitHeight) {
-                console.log('no break', fitValueTest);
+                // console.log('no break', fitValueTest);
                 fitValue = fitValueTest;
                 fitHeight = heightComputeFit;
               } else {
-                console.log('break');
+                // console.log('break');
                 ilen = maxLoop;
               }
             }
       
-            // console.log(heightComputeFit, fitHeight, safeHeight, this.page.height, heightCompute, percent);
+            // // console.log(heightComputeFit, fitHeight, safeHeight, this.page.height, heightCompute, percent);
 
             const fitValueLength: number = fitValue.length;
 
@@ -1501,7 +1499,7 @@ class PDFDocument extends PDFDocumentSource
         const { property } = Object(this.pdfkitTableCache.headers[i]);
         padding = Object(this.headerPadding[i]);
 
-        // console.log('A', i, padding, left, top, right, bottom);
+        // // console.log('A', i, padding, left, top, right, bottom);
 
         // value
         text = row[property];
@@ -1519,21 +1517,21 @@ class PDFDocument extends PDFDocumentSource
         // stay max height
         height = Math.max(height, heightCompute + (padding.top + padding.bottom));
 
-        // console.log('B', heightCompute, this.columnSizes[i], height);
+        // // console.log('B', heightCompute, this.columnSizes[i], height);
 
         // register long text
         if(preventLongText)
         {
-          console.log('preventLongText');
-          // console.log('preventLongText', heightCompute, this.pdfkitTableCache.safelyPageHeight);
+          // console.log('preventLongText');
+          // // console.log('preventLongText', heightCompute, this.pdfkitTableCache.safelyPageHeight);
 
           // if row height is bigger 
           if(heightCompute > this.pdfkitTableCache.safelyPageHeight) 
           {
             haveLongText = true;
-            console.log('haveLongText');
+            // console.log('haveLongText');
 
-            // console.log('Sooo big', heightCompute, this.pdfkitTableCache.safelyPageHeight);
+            // // console.log('Sooo big', heightCompute, this.pdfkitTableCache.safelyPageHeight);
 
             // variables
             let safeHeight  = this.pdfkitTableCache.safelyPageHeight - this.headerHeight - (this.pdfkitTableCache.distanceCorrection * 4);
@@ -1542,7 +1540,7 @@ class PDFDocument extends PDFDocumentSource
             let lenTextTest = text.length / percent - 70; // 50
             let fitValue    = '';
 
-            // console.log('fitHeight', fitHeight, percent)
+            // // console.log('fitHeight', fitHeight, percent)
 
             // pt-br: veja bem, dependendo do tamanho da font esse recurso ajuda o 
             // text a não pular de página ou evitar o text ficar muito encolhido em relação 
@@ -1571,17 +1569,17 @@ class PDFDocument extends PDFDocumentSource
                 align,
               });
 
-              // console.log('C', heightComputeFit);
+              // // console.log('C', heightComputeFit);
 
               // add header padding
               heightComputeFit += (padding.top + padding.bottom); 
 
-              // console.log('D', heightComputeFit);
+              // // console.log('D', heightComputeFit);
 
               if(heightComputeFit < fitHeight) 
               {
                 fitValue = fitValueTest;
-                console.log('E', fitValue);
+                // console.log('E', fitValue);
               } 
               else 
               {
@@ -1589,11 +1587,11 @@ class PDFDocument extends PDFDocumentSource
               }
             }
       
-            // console.log(heightComputeFit, fitHeight, safeHeight, this.page.height, heightCompute, percent);
+            // // console.log(heightComputeFit, fitHeight, safeHeight, this.page.height, heightCompute, percent);
 
             const fitValueLength: number = fitValue.length;
 
-            // console.log('E', fitValue);
+            // // console.log('E', fitValue);
 
             // push prevent
             veryLongText.push({
@@ -1617,8 +1615,8 @@ class PDFDocument extends PDFDocumentSource
       // height = Math.max(height, this.minRowHeight || 0);
       height = height + this.pdfkitTableCache.distanceCorrection + (top + bottom); //  + (padding.top + padding.bottom)
 
-      // console.log('F', height);
-      // console.log('G', [
+      // // console.log('F', height);
+      // // console.log('G', [
       //   row,
       //   height,
       //   veryLongText,
@@ -1686,9 +1684,9 @@ class PDFDocument extends PDFDocumentSource
           this.headerHeightAndFirstLine + // + first line height
           this.headerHeight; // + header height 
 
-          console.log('headerHeightAndFirstLineAndTitleCalc', this.headerHeightAndFirstLineAndTitleCalc);
+          // console.log('headerHeightAndFirstLineAndTitleCalc', this.headerHeightAndFirstLineAndTitleCalc);
     
-        // console.log('headerHeightAndFirstLine', this.headerHeightAndFirstLine, this.headerHeightAndFirstLineAndTitleCalc)
+        // // console.log('headerHeightAndFirstLine', this.headerHeightAndFirstLine, this.headerHeightAndFirstLineAndTitleCalc)
     
         resolve(this.headerHeightAndFirstLineAndTitleCalc);
         return;
@@ -1821,7 +1819,7 @@ class PDFDocument extends PDFDocumentSource
 
   logg(...args: any[]) 
   {
-    // console.log(args);
+    // // console.log(args);
   }
 
 }
