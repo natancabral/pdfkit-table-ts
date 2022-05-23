@@ -100,10 +100,12 @@
   "exclude": [
     "node_modules",
     "src/*.test.*",
+    ".backs",
+    ".ideas",
     "example*",
     "example*/**/*"
   ],
   "include": [
-    "src"
-, ".backs/types-old.ts"  ]
+    "src"  
+  ]
 }
