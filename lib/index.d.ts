@@ -1,35 +1,35 @@
 declare const PDFDocumentSource: any;
-import { Data, Divider, Header, Options, Padding, Rect, Table, Title } from "./types";
-export interface IFillAndOpacity {
+import { IData, IDivider, IHeader, IOptions, IPadding, IRect, ITable, ITitle } from "./types";
+interface IIFillAndOpacity {
     fill: string | undefined;
     opacity: number | undefined;
 }
-export interface IOptions {
-    title?: string | Title;
-    subtitle?: string | Title;
+interface IIOptions {
+    title?: string | ITitle;
+    subtitle?: string | ITitle;
     width?: number;
     x?: number | null;
     y?: number;
-    divider?: Divider | undefined;
+    divider?: IDivider | undefined;
     columnsSize?: number[];
-    padding?: number[] | Padding;
+    padding?: number[] | IPadding;
     hideHeader?: boolean;
     minRowHeight?: number;
     prepareHeader: () => any;
-    prepareRow: (row: any, indexColumn?: number, indexRow?: number, rectRow?: Rect, rectCell?: Rect) => any;
+    prepareRow: (row: any, indexColumn?: number, indexRow?: number, rectRow?: IRect, rectCell?: IRect) => any;
 }
-interface ICalcRowHeightOptions {
+interface IICalcRowHeightOptions {
     align?: string;
     isHeader?: boolean;
     preventLongText?: boolean;
 }
-interface IPdfkitTableCache {
-    title: string | Title;
-    subtitle: string | Title;
-    headers: (string | Header)[];
-    datas: Data[];
+interface IIPdfkitTableCache {
+    title: string | ITitle;
+    subtitle: string | ITitle;
+    headers: (string | IHeader)[];
+    datas: IData[];
     rows: string[][];
-    options: IOptions;
+    options: IIOptions;
     table: {
         width: number;
         pages: number;
@@ -42,31 +42,31 @@ interface IPdfkitTableCache {
     safelyPageY: number;
 }
 declare class PDFDocument extends PDFDocumentSource {
-    pdfkitTableCache: IPdfkitTableCache;
+    pdfkitTableCache: IIPdfkitTableCache;
     constructor(option?: any);
-    initValidates(): void;
-    initCalcs(): void;
+    private initValidates;
+    private initCalcs;
     resetPeerTable(): void;
     resetPeerPage(): void;
     initColumns(): void;
     prepareTable(table: any): any;
     prepareOptions(options?: any): any;
     prepareRowOptions(row: any): void;
-    prepareRowFillOptionsHeader: (object: any) => IFillAndOpacity;
-    prepareRowFillOptionsData: (object: any) => IFillAndOpacity;
-    prepareCellPadding(p: number | number[]): Padding;
+    prepareRowFillOptionsHeader: (object: any) => IIFillAndOpacity;
+    prepareRowFillOptionsData: (object: any) => IIFillAndOpacity;
+    prepareCellPadding(p: number | number[]): IPadding;
     addPageAsync(): Promise<void>;
     pageAddedFire(): Promise<void>;
-    createFill(rect: Rect, fillColor?: string, fillOpacity?: number): Promise<void>;
-    addBackground: (rect: Rect, fillColor?: string | undefined, fillOpacity?: number | undefined) => Promise<void>;
+    createFill(rect: IRect, fillColor?: string, fillOpacity?: number): Promise<void>;
+    addBackground: (rect: IRect, fillColor?: string | undefined, fillOpacity?: number | undefined) => Promise<void>;
     createDivider(type: string, x: number, y: number, strokeWidth?: number, strokeOpacity?: number, strokeDisabled?: boolean, strokeColor?: string): void;
     createTitles(): Promise<unknown>;
-    createTitle(data: string | Title | undefined, size?: number, opacity?: number, isTitle?: boolean): Promise<void>;
+    createTitle(data: string | ITitle | undefined, size?: number, opacity?: number, isTitle?: boolean): Promise<void>;
     createHeader(): Promise<void>;
     createRowString(data: any): Promise<void>;
     createRowObject(data: any): Promise<void>;
-    calcRowHeightString(row: any, opt: ICalcRowHeightOptions): Promise<number | any>;
-    calcRowHeightObject(row: any, opt: ICalcRowHeightOptions): Promise<number | any[]>;
+    calcRowHeightString(row: any, opt: IICalcRowHeightOptions): Promise<number | any>;
+    calcRowHeightObject(row: any, opt: IICalcRowHeightOptions): Promise<number | any[]>;
     calcTitleSubtitleHeaderAndFirstLine(): Promise<number>;
     calcLimitCellOnPage(y: number, height: number): boolean;
     createTable(data: any): Promise<void>;
@@ -79,7 +79,7 @@ declare class PDFDocument extends PDFDocumentSource {
         columns: number;
         summation: any[];
     };
-    table(table: Table, options: Options, callback?: Function): Promise<{
+    table(table: ITable, options: IOptions, callback?: Function): Promise<{
         y: any;
         x: any;
         width: number;
@@ -88,7 +88,7 @@ declare class PDFDocument extends PDFDocumentSource {
         columns: number;
         summation: any[];
     }>;
-    tables(tables: Table[], callback?: Function): Promise<unknown>;
+    tables(tables: ITable[], callback?: Function): Promise<unknown>;
     logg(...args: any[]): void;
 }
 export default PDFDocument;

@@ -46,30 +46,27 @@ PDFDocument
 
 */
 
-// declare module 'pdfkit-table' 
-// {
-// }
-
 const PDFDocumentSource = require("pdfkit");
-import { Data, DataOptions, Divider, DividerOptions, Header, ObjectData, Options, Padding, Rect, Table, Title } from "./types";
 
-export interface IFillAndOpacity
+import { IData, IDivider, IDividerOptions, IHeader, IObjectData, IOptions, IPadding, IRect, ITable, ITitle } from "./types";
+
+interface IIFillAndOpacity
 {
   fill: string | undefined; 
   opacity: number | undefined;
 }
 
-export interface IOptions
+interface IIOptions
 {
-  title?: string | Title;
-  subtitle?: string | Title;
+  title?: string | ITitle;
+  subtitle?: string | ITitle;
   width?: number;
   x?: number | null; 
   y?: number; 
-  divider?: Divider | undefined;
+  divider?: IDivider | undefined;
   columnsSize?: number[];
   // columnSpacing?: number; //default 5
-  padding?: number[] | Padding; 
+  padding?: number[] | IPadding; 
   // addPage?: boolean;
   hideHeader?: boolean;
   minRowHeight?: number;
@@ -78,32 +75,35 @@ export interface IOptions
     row: any,
     indexColumn?: number,
     indexRow?: number,
-    rectRow?: Rect,
-    rectCell?: Rect
+    rectRow?: IRect,
+    rectCell?: IRect
   ) => any;
 }
 
-interface IDividerStroke {
+interface IIDividerStroke 
+{
   width?: number | undefined; 
   color?: string | undefined;
   opacity?: number | undefined; 
   disabled?: boolean | undefined;
 };
 
-interface ICalcRowHeightOptions {
+interface IICalcRowHeightOptions 
+{
   align?: string; 
   isHeader?: boolean; 
   preventLongText?: boolean;
 }
 
-interface IPdfkitTableCache {
+interface IIPdfkitTableCache 
+{
     // cache
-    title: string | Title;
-    subtitle: string | Title;
-    headers: (string | Header)[];
-		datas: Data[];
+    title: string | ITitle;
+    subtitle: string | ITitle;
+    headers: (string | IHeader)[];
+		datas: IData[];
 		rows: string[][];
-    options: IOptions;
+    options: IIOptions;
     // table resume
     table: {
       width: number; // px
@@ -117,10 +117,13 @@ interface IPdfkitTableCache {
     safelyPageY: number;
 };
 
+// declare namespace PDFKitTable
+// {
+
 class PDFDocument extends PDFDocumentSource 
 {
   // variables
-  pdfkitTableCache: IPdfkitTableCache = {
+  pdfkitTableCache: IIPdfkitTableCache = {
     // cache
     title: '',
     subtitle: '',
@@ -158,7 +161,7 @@ class PDFDocument extends PDFDocumentSource
   // isHeaderString: boolean = false;  
   // headerHeight: number = 0;
   // headerHeightAndFirstLine: number = 0;
-  // headerHeightAndFirstLineAndTitleCalc: number = 0;
+  // titleAndHeaderAndFirstLineHeightCalc: number = 0;
 
   // Contructor
   // ------------------------------------------------------------------
@@ -172,7 +175,7 @@ class PDFDocument extends PDFDocumentSource
   // Init validates
   // ------------------------------------------------------------------
 
-  initValidates() 
+  private initValidates(): void
   {
     // validate
     if(this.isHeaderString === false || !this.pdfkitTableCache.headers || !this.pdfkitTableCache.table.columns)
@@ -185,13 +188,12 @@ class PDFDocument extends PDFDocumentSource
     {
       new Error('Combination simple "header" + complex "datas" dont works.');
       return;
-    }
-    
+    }    
   }
 
   // Init calc
   // ------------------------------------------------------------------
-  initCalcs() 
+  private initCalcs(): void
   {
     // reset global values
     this.resetPeerTable();
@@ -216,12 +218,12 @@ class PDFDocument extends PDFDocumentSource
 
     // TODO: Dont works
     // default size to fit new page
-    this.titleHeight    = this.pdfkitTableCache.title     ? 15 : (this.pdfkitTableCache.options.title     ? 15 : 0);
-    this.subtitleHeight = this.pdfkitTableCache.subtitle  ? 10 : (this.pdfkitTableCache.options.subtitle  ? 10 : 0);
+    this.titleHeight    = this.pdfkitTableCache.title     ? 20 : (this.pdfkitTableCache.options.title     ? 20 : 0);
+    this.subtitleHeight = this.pdfkitTableCache.subtitle  ? 15 : (this.pdfkitTableCache.options.subtitle  ? 15 : 0);
 
     this.headerHeight = 0; // cache
-    this.headerHeightAndFirstLine = 0; // big cell
-    this.headerHeightAndFirstLineAndTitleCalc = 0; // big cell with title + subtitle
+    this.firstLineHeight = 0; // big cell
+    this.titleAndHeaderAndFirstLineHeightCalc = 0; // big cell with title + subtitle
     this.rowHeight = 0; // default row height
     this.minRowHeight = this.pdfkitTableCache.options.minRowHeight || 0; // default min row height
   }
@@ -401,7 +403,7 @@ class PDFDocument extends PDFDocumentSource
   };
 
   // Prepare fill options TO ONLY header
-  prepareRowFillOptionsHeader = (object: any): IFillAndOpacity => 
+  prepareRowFillOptionsHeader = (object: any): IIFillAndOpacity => 
   {
     const undefinedDefault = { fill: undefined, opacity: undefined };
 
@@ -438,7 +440,7 @@ class PDFDocument extends PDFDocumentSource
   }
 
   // Prepare fill options TO ONLY data
-  prepareRowFillOptionsData = (object: any) : IFillAndOpacity => 
+  prepareRowFillOptionsData = (object: any) : IIFillAndOpacity => 
   {
     const undefinedDefault = { fill: undefined, opacity: undefined };
 
@@ -486,7 +488,7 @@ class PDFDocument extends PDFDocumentSource
    *  
    */
 
-  prepareCellPadding(p: number | number[]) : Padding
+  prepareCellPadding(p: number | number[]) : IPadding
   {
     // array
     if(Array.isArray(p)){
@@ -558,14 +560,14 @@ class PDFDocument extends PDFDocumentSource
 
   // Row fill (background header, cells and rows)
   // ------------------------------------------------------------------
-  createFill(rect: Rect, fillColor?: string, fillOpacity?: number): Promise<void>
+  createFill(rect: IRect, fillColor?: string, fillOpacity?: number): Promise<void>
   {
     this.logg('createFill');
     return new Promise((resolve, reject) => 
     {
       try 
       {
-        const { x, y, width, height }: Rect = rect;
+        const { x, y, width, height }: IRect = rect;
         const distance = this.pdfkitTableCache.distanceCorrection;
 
         // validate
@@ -608,7 +610,7 @@ class PDFDocument extends PDFDocumentSource
   createDivider(type: string, x: number, y: number, strokeWidth?: number, strokeOpacity?: number, strokeDisabled?: boolean, strokeColor?: string)
   {
     const distance = this.pdfkitTableCache.distanceCorrection;
-    let direction: DividerOptions | undefined;
+    let direction: IDividerOptions | undefined;
     // type || (type = 'horizontal'); // header | horizontal | vertical 
 
     switch(type)
@@ -623,7 +625,7 @@ class PDFDocument extends PDFDocumentSource
         direction = {};
     }
 
-    const { width, color, opacity, disabled }: IDividerStroke = direction || {
+    const { width, color, opacity, disabled }: IIDividerStroke = direction || {
       width: undefined, color: undefined, opacity: undefined, disabled: false
     }; 
 
@@ -674,16 +676,18 @@ class PDFDocument extends PDFDocumentSource
       try 
       {
         // from table
-        let { title, subtitle }: { title?: string | Title | undefined; subtitle: string | Title | undefined } = this.pdfkitTableCache; 
+        let { title, subtitle }: { title?: string | ITitle | undefined; subtitle: string | ITitle | undefined } = this.pdfkitTableCache; 
 
         // from options
         title     || (title = this.pdfkitTableCache.options.title);
         subtitle  || (subtitle = this.pdfkitTableCache.options.subtitle);
 
         // calc
-        const calc: number = await this.calcTitleSubtitleHeaderAndFirstLine();      
-        // console.log(calc);  
-        if(this.calcLimitCellOnPage(0, calc))
+        // const calc: number = await this.calcTitleSubtitleHeaderAndFirstLine();
+        this.titleAndHeaderAndFirstLineHeightCalc = await this.calcTitleSubtitleHeaderAndFirstLine();
+        console.log(this.titleAndHeaderAndFirstLineHeightCalc);
+
+        if(this.calcLimitCellOnPage(0, this.titleAndHeaderAndFirstLineHeightCalc))
         {
           // console.log('calcLimitCellOnPage');
           this.doNotCreateHeader = true;
@@ -702,7 +706,7 @@ class PDFDocument extends PDFDocumentSource
     });
   }
 
-  createTitle(data: string | Title | undefined, size?: number, opacity?: number, isTitle?: boolean): Promise<void>
+  createTitle(data: string | ITitle | undefined, size?: number, opacity?: number, isTitle?: boolean): Promise<void>
   {
     return new Promise((resolve) => 
     {
@@ -713,7 +717,7 @@ class PDFDocument extends PDFDocumentSource
       } 
 
       const { x, y } = this.pdfkitTableCache.options;
-      let titleHeight;
+      let titleHeight: number = 0;
 
       // style save
       this.save();
@@ -801,7 +805,7 @@ class PDFDocument extends PDFDocumentSource
         let colIndex: number; // index
         let colLen: number = this.pdfkitTableCache.table.columns || 0; // array columns
         let text: any;
-        let padding: Padding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
+        let padding: IPadding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
 
         // x reset
         // this.positionX = this.initialPositionX;
@@ -842,7 +846,7 @@ class PDFDocument extends PDFDocumentSource
         // }
 
         // // calc if header + first line fit on last space page
-        // this.headerHeightAndFirstLineAndTitleCalc = 0 +
+        // this.titleAndHeaderAndFirstLineHeightCalc = 0 +
         //   this.positionY + // last y position
         //   this.titleHeight +
         //   this.subtitleHeight +
@@ -850,31 +854,42 @@ class PDFDocument extends PDFDocumentSource
         //   this.headerHeight; // + header height 
         //   // this.pdfkitTableCache.safelyMarginBottomHeight; // + safe margin
 
-        // // // console.log('headerHeightAndFirstLine', this.headerHeightAndFirstLine, this.headerHeightAndFirstLineAndTitleCalc)
+        // // // console.log('headerHeightAndFirstLine', this.headerHeightAndFirstLine, this.titleAndHeaderAndFirstLineHeightCalc)
         // // --------------------------------------------------------------------------------
         // // --------------------------------------------------------------------------------
         // // --------------------------------------------------------------------------------
 
-        this.headerHeightAndFirstLineAndTitleCalc = await this.calcTitleSubtitleHeaderAndFirstLine();
+        // TALVEZ TENHA QUE VOLTAR ISSO AQUI EM IF:
+        if(this.titleAndHeaderAndFirstLineHeightCalc === 0)
+        {
+          this.titleAndHeaderAndFirstLineHeightCalc = await this.calcTitleSubtitleHeaderAndFirstLine();
+        }
 
         // content is big text (crazy!)
-        if(this.headerHeightAndFirstLine > this.pdfkitTableCache.safelyPageY) 
+        if(this.positionY + this.titleAndHeaderAndFirstLineHeightCalc > this.pdfkitTableCache.safelyPageY) 
         {
+          // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
           const err = 'CRAZY! This a big text on cell';
-          // console.log(err);
+          console.log(err);
           this.logg(err);
-        } 
-        else if(this.headerHeightAndFirstLineAndTitleCalc > this.pdfkitTableCache.safelyPageY) 
-        {
-          this.logg('addPage');
-          // // console.log('addPage');
           await this.addPageAsync();
+          await this.createHeader();
+          resolve();
+          return;
+        } 
+        else if(this.titleAndHeaderAndFirstLineHeightCalc > this.pdfkitTableCache.safelyPageHeight) 
+        {
+          // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          this.logg('addPage');
+          console.log('addPage');
+          await this.addPageAsync();
+          await this.createHeader();
           resolve();
           return;
         }
 
         // fill header
-        const rectRow: Rect = { x: this.columnPositions[0], y: this.positionY, width: this.pdfkitTableCache.table.width, height: this.headerHeight };
+        const rectRow: IRect = { x: this.columnPositions[0], y: this.positionY, width: this.pdfkitTableCache.table.width, height: this.headerHeight };
         this.createFill(rectRow);
 
         // simple header
@@ -899,7 +914,7 @@ class PDFDocument extends PDFDocumentSource
           for(colIndex = 0; colIndex < colLen; colIndex++) 
           {
             const rectCell = { ...rectRow, x: this.columnPositions[colIndex], width: this.columnSizes[colIndex] };
-            let fill: IFillAndOpacity = Object(this.prepareRowFillOptionsHeader(this.pdfkitTableCache.headers[colIndex]));
+            let fill: IIFillAndOpacity = Object(this.prepareRowFillOptionsHeader(this.pdfkitTableCache.headers[colIndex]));
             fill.fill && this.createFill(rectCell, fill.fill, fill.opacity);
 
             // # TODO:
@@ -974,13 +989,13 @@ class PDFDocument extends PDFDocumentSource
       const { top, right, left } = Object(this.pdfkitTableCache.options.padding);
       const distance = this.pdfkitTableCache.distanceCorrection / 2;
       let rowIndex: number = 0; 
-      let colIndex: number = 0; // index
+      let colIndex: number = 0;
       let rowLen: number = rows.length || 0; // array lines
       let colLen: number = this.pdfkitTableCache.table.columns || 0; // array columns
-      let elm; // element line
-      let text;
-      let padding: Padding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
-      let fill: IFillAndOpacity = { opacity: undefined, fill: undefined };
+      let elm: any; // element line
+      let text: any;
+      let padding: IPadding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
+      let fill: IIFillAndOpacity = { opacity: undefined, fill: undefined };
 
       // style
       await this.pdfkitTableCache.options?.prepareRow?.(null);
@@ -1132,12 +1147,13 @@ class PDFDocument extends PDFDocumentSource
       // variables
       const { top, right, bottom, left } = Object(this.pdfkitTableCache.options.padding);
       const distance = this.pdfkitTableCache.distanceCorrection/2;
-      let rowIndex, colIndex; // index
+      let rowIndex: number = 0; 
+      let colIndex: number = 0;
       let rowLen = datas.length || 0; // array lines
       let colLen = this.pdfkitTableCache.table.columns || 0; // array columns
-      let elm; // element line
-      let text;
-      let fill: IFillAndOpacity = { opacity: undefined, fill: undefined };
+      let elm: any; // element line
+      let text: any;
+      let fill: IIFillAndOpacity = { opacity: undefined, fill: undefined };
 
       // loop lines
       for(rowIndex = 0; rowIndex < rowLen; rowIndex++) 
@@ -1306,26 +1322,26 @@ class PDFDocument extends PDFDocumentSource
   // Calc row height (from array)
   // ------------------------------------------------------------------
 
-  calcRowHeightString(row: any, opt: ICalcRowHeightOptions): Promise<number | any>
+  calcRowHeightString(row: any, opt: IICalcRowHeightOptions): Promise<number | any>
   {
     return new Promise( async (resolve) => 
     {
       // extract
-      let { align, isHeader, preventLongText }: ICalcRowHeightOptions = opt;
-      const { left, top, right, bottom }: Padding = Object(this.pdfkitTableCache.options.padding);
+      let { align, isHeader, preventLongText }: IICalcRowHeightOptions = opt;
+      const { left, top, right, bottom }: IPadding = Object(this.pdfkitTableCache.options.padding);
 
       // validate
       isHeader === undefined && (isHeader = false);
       align || (align = 'left');
 
       // variables
-      let text: string | ObjectData = '';
+      let text: string | IObjectData = '';
       let height = isHeader ? 0 : (this.minRowHeight || 0);
       let heightCompute = 0;
       let len = row.length || 0;
       let haveLongText = false;
       let veryLongText = [];
-      let padding: Padding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
+      let padding: IPadding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
 
       // loop var
       let colIndex = 0;
@@ -1477,26 +1493,26 @@ class PDFDocument extends PDFDocumentSource
   // Calc row height (from object)
   // ------------------------------------------------------------------
 
-  calcRowHeightObject(row: any, opt: ICalcRowHeightOptions): Promise<number | any[]>
+  calcRowHeightObject(row: any, opt: IICalcRowHeightOptions): Promise<number | any[]>
   {
     return new Promise( async (resolve) => 
     {
       // extract
-      let { align, isHeader, preventLongText }: ICalcRowHeightOptions = opt;
-      const { left, top, right, bottom }: Padding = Object(this.pdfkitTableCache.options.padding);
+      let { align, isHeader, preventLongText }: IICalcRowHeightOptions = opt;
+      const { left, top, right, bottom }: IPadding = Object(this.pdfkitTableCache.options.padding);
 
       // validate
       isHeader === undefined && (isHeader = false);
       align || (align = 'left');
       
       // variables
-      let text: string | ObjectData = '';
+      let text: string | IObjectData = '';
       let height = isHeader ? 0 : (this.minRowHeight || 0);
       let heightCompute = 0;
       let len = this.pdfkitTableCache.table.columns || 0;
       let haveLongText = false;
       let veryLongText = [];
-      let padding: Padding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
+      let padding: IPadding = { top: 0, right: 0, bottom: 0, left: 0 }; // header padding
 
       // loop var
       let i = 0;
@@ -1676,29 +1692,31 @@ class PDFDocument extends PDFDocumentSource
         }
     
         // calc first table line when init table
-        if(this.headerHeightAndFirstLine === 0)
+        if(this.firstLineHeight === 0)
         {
           if(datas.length > 0)
           {
-            this.headerHeightAndFirstLine = Number(await this.calcRowHeightObject(datas[0], { isHeader: true }));
-            this.logg(this.headerHeightAndFirstLine, 'datas');
+            this.firstLineHeight = Number(await this.calcRowHeightObject(datas[0], { isHeader: true }));
+            this.logg(this.firstLineHeight, 'datas');
           }
           else if(rows.length > 0)
           {
-            this.headerHeightAndFirstLine = Number(await this.calcRowHeightString(rows[0], { isHeader: true }));
-            this.logg(this.headerHeightAndFirstLine, 'rows');
+            this.firstLineHeight = Number(await this.calcRowHeightString(rows[0], { isHeader: true }));
+            this.logg(this.firstLineHeight, 'rows');
           }
         }
     
         // calc if header + first line fit on last space page
-        this.headerHeightAndFirstLineAndTitleCalc =
+        // this.titleAndHeaderAndFirstLineHeightCalc =
+        const calc = (
           this.titleHeight +
           this.subtitleHeight +
-          this.headerHeightAndFirstLine + // + first line height
           this.headerHeight + // + header height 
-          (this.pdfkitTableCache.distanceCorrection * 2); // space between titles and lines
-    
-        resolve(this.headerHeightAndFirstLineAndTitleCalc);
+          this.firstLineHeight + // + first line height
+          (this.pdfkitTableCache.distanceCorrection * 2) // space between titles and lines
+        );
+
+        resolve(calc);
         return;
       }
       catch(err)
@@ -1756,7 +1774,7 @@ class PDFDocument extends PDFDocumentSource
   // Table - THE MAGIC key:@table
   // ------------------------------------------------------------------
 
-  async table(table: Table, options: Options, callback?: Function) 
+  async table(table: ITable, options: IOptions, callback?: Function) 
   {
     // prepare
     table   = this.prepareTable(table);
@@ -1799,7 +1817,7 @@ class PDFDocument extends PDFDocumentSource
   // Join tables key:@tables
   // ------------------------------------------------------------------
 
-  async tables(tables: Table[], callback?: Function) {
+  async tables(tables: ITable[], callback?: Function) {
     return new Promise( async (resolve, reject) => 
     {
       try 

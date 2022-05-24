@@ -1,16 +1,16 @@
-export declare type Padding = {
+export declare type IPadding = {
     top: number;
     right: number;
     bottom: number;
     left: number;
 };
-export declare type Rect = {
+export declare type IRect = {
     x: number;
     y: number;
     width: number;
     height: number;
 };
-export interface Header {
+export interface IHeader {
     label: string;
     property: string;
     width?: number;
@@ -21,56 +21,56 @@ export interface Header {
     headerAlign?: string;
     columnColor?: string;
     columnOpacity?: number;
-    renderer?: (value: any, indexColumn?: number, indexRow?: number, row?: number, rectRow?: Rect, rectCell?: Rect) => string;
+    renderer?: (value: any, indexColumn?: number, indexRow?: number, row?: number, rectRow?: IRect, rectCell?: IRect) => string;
 }
-export interface DataOptions {
+export interface IDataOptions {
     fontSize: number;
     fontFamily: string;
     separation: boolean;
 }
-export interface ObjectData {
+export interface IObjectData {
     label: string;
-    options: DataOptions;
+    options: IDataOptions;
 }
-export interface Data {
-    [key: string]: (string | number | boolean | null) | ObjectData;
+export interface IData {
+    [key: string]: (string | number | boolean | null | IObjectData);
 }
-export interface DividerOptions {
+export interface IDividerOptions {
     disabled?: boolean;
     width?: number;
     opacity?: number;
     color?: string;
 }
-export interface Divider {
-    header: DividerOptions;
-    horizontal: DividerOptions;
+export interface IDivider {
+    header: IDividerOptions;
+    horizontal: IDividerOptions;
 }
-export interface Title {
+export interface ITitle {
     label: string;
     fontSize?: number;
     fontFamily?: string;
     color?: string;
 }
-export interface Table {
-    title?: string | Title;
-    subtitle?: string | Title;
-    headers: (string | Header)[];
-    datas?: Data[];
+export interface ITable {
+    title?: string | ITitle;
+    subtitle?: string | ITitle;
+    headers: (string | IHeader)[];
+    datas?: IData[];
     rows?: string[][];
-    options?: Options;
+    options?: IOptions;
 }
-export interface Options {
-    title?: string | Title;
-    subtitle?: string | Title;
+export interface IOptions {
+    title?: string | ITitle;
+    subtitle?: string | ITitle;
     width?: number;
     x?: number | null;
     y?: number;
-    divider?: Divider | undefined;
+    divider?: IDivider;
     columnsSize?: number[];
-    padding?: number[] | Padding;
+    padding?: number[] | IPadding;
     hideHeader?: boolean;
     minRowHeight?: number;
     prepareHeader?: () => any;
-    prepareRow?: (row: number, indexColumn?: number, indexRow?: number, rectRow?: Rect, rectCell?: Rect) => () => any;
+    prepareRow?: (row: number, indexColumn?: number, indexRow?: number, rectRow?: IRect, rectCell?: IRect) => any;
 }
 //# sourceMappingURL=types.d.ts.map

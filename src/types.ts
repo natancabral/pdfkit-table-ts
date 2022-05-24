@@ -1,5 +1,5 @@
 
-export type Padding =
+export type IPadding =
 {
   top: number;
   right: number;
@@ -7,7 +7,7 @@ export type Padding =
   left: number; 
 }
 
-export type Rect = 
+export type IRect = 
 {
   x: number;
   y: number;
@@ -15,7 +15,7 @@ export type Rect =
   height: number;
 }
 
-export interface Header 
+export interface IHeader 
 {
   label: string;
   property: string;
@@ -32,30 +32,30 @@ export interface Header
     indexColumn?: number,
     indexRow?: number,
     row?: number,
-    rectRow?: Rect,
-    rectCell?: Rect
+    rectRow?: IRect,
+    rectCell?: IRect
   ) => string;
 }
 
-export interface DataOptions 
+export interface IDataOptions 
 {
   fontSize: number;
   fontFamily: string;
   separation: boolean;
 }
 
-export interface ObjectData 
+export interface IObjectData 
 {
   label: string; 
-  options: DataOptions
+  options: IDataOptions
 }
 
-export interface Data 
+export interface IData 
 {
-  [key: string]: (string | number | boolean | null) | ObjectData;
+  [key: string]: (string | number | boolean | null | IObjectData);
 }
 
-export interface DividerOptions 
+export interface IDividerOptions 
 {
   disabled?: boolean;
   width?: number;
@@ -63,13 +63,13 @@ export interface DividerOptions
   color?: string
 }
 
-export interface Divider 
+export interface IDivider 
 {
-  header: DividerOptions;
-  horizontal: DividerOptions;
+  header: IDividerOptions;
+  horizontal: IDividerOptions;
 }
 
-export interface Title 
+export interface ITitle 
 {
   label: string;
   fontSize?: number;
@@ -77,27 +77,27 @@ export interface Title
   color?: string; 
 }
 
-export interface Table 
+export interface ITable 
 {
-  title?: string | Title;
-  subtitle?: string | Title;
-  headers: (string | Header)[];
-  datas?: Data[];
+  title?: string | ITitle;
+  subtitle?: string | ITitle;
+  headers: (string | IHeader)[];
+  datas?: IData[];
   rows?: string[][];
-  options?: Options;
+  options?: IOptions;
 }
 
-export interface Options 
+export interface IOptions 
 {
-  title?: string | Title;
-  subtitle?: string | Title;
+  title?: string | ITitle;
+  subtitle?: string | ITitle;
   width?: number;
   x?: number | null; 
   y?: number; 
-  divider?: Divider | undefined;
+  divider?: IDivider;
   columnsSize?: number[];
   // columnSpacing?: number; //default 5
-  padding?: number[] | Padding; 
+  padding?: number[] | IPadding; 
   // addPage?: boolean;
   hideHeader?: boolean;
   minRowHeight?: number;
@@ -106,7 +106,7 @@ export interface Options
     row: number,
     indexColumn?: number,
     indexRow?: number,
-    rectRow?: Rect,
-    rectCell?: Rect
-  ) => () => any;
+    rectRow?: IRect,
+    rectCell?: IRect
+  ) => any;
 }
