@@ -1,6 +1,7 @@
 declare const PDFDocumentSource: any;
 import { IData, IDivider, IHeader, IOptions, IPadding, IRect, ITable, ITitle } from "./types";
-interface IIFillAndOpacity {
+declare type IICellPaddingInput = number | number[] | IPadding;
+declare interface IIFillAndOpacity {
     fill: string | undefined;
     opacity: number | undefined;
 }
@@ -22,6 +23,19 @@ interface IICalcRowHeightOptions {
     align?: string;
     isHeader?: boolean;
     preventLongText?: boolean;
+}
+interface IIVeryLongText {
+    index: number;
+    value: string | number;
+    fitValue: string | number;
+    restValue: string | number;
+    fitHeight: number;
+}
+declare type ITVeryLongText = IIVeryLongText | null;
+interface IICalcRowHeight {
+    height: number;
+    haveLongText: boolean;
+    veryLongText: ITVeryLongText[] | null;
 }
 interface IIPdfkitTableCache {
     title: string | ITitle;
@@ -54,7 +68,7 @@ declare class PDFDocument extends PDFDocumentSource {
     prepareRowOptions(row: any): void;
     prepareRowFillOptionsHeader: (object: any) => IIFillAndOpacity;
     prepareRowFillOptionsData: (object: any) => IIFillAndOpacity;
-    prepareCellPadding(p: number | number[]): IPadding;
+    prepareCellPadding(p: IICellPaddingInput): IPadding;
     addPageAsync(): Promise<void>;
     pageAddedFire(): Promise<void>;
     createFill(rect: IRect, fillColor?: string, fillOpacity?: number): Promise<void>;
@@ -65,8 +79,8 @@ declare class PDFDocument extends PDFDocumentSource {
     createHeader(): Promise<void>;
     createRowString(data: any): Promise<void>;
     createRowObject(data: any): Promise<void>;
-    calcRowHeightString(row: any, opt: IICalcRowHeightOptions): Promise<number | any>;
-    calcRowHeightObject(row: any, opt: IICalcRowHeightOptions): Promise<number | any[]>;
+    calcRowHeightString(row: any, opt: IICalcRowHeightOptions): Promise<IICalcRowHeight>;
+    calcRowHeightObject(row: any, opt: IICalcRowHeightOptions): Promise<IICalcRowHeight>;
     calcTitleSubtitleHeaderAndFirstLine(): Promise<number>;
     calcLimitCellOnPage(y: number, height: number): boolean;
     createTable(data: any): Promise<void>;
@@ -79,16 +93,8 @@ declare class PDFDocument extends PDFDocumentSource {
         columns: number;
         summation: any[];
     };
-    table(table: ITable, options: IOptions, callback?: Function): Promise<{
-        y: any;
-        x: any;
-        width: number;
-        pages: number;
-        lines: number;
-        columns: number;
-        summation: any[];
-    }>;
-    tables(tables: ITable[], callback?: Function): Promise<unknown>;
+    table(table: ITable, options: IOptions, callback?: Function): Promise<object>;
+    tables(tables: ITable[]): Promise<unknown>;
     logg(...args: any[]): void;
 }
 export default PDFDocument;

@@ -3,6 +3,7 @@
 example-test
 example
 node_modules
+test
 
 package-lock.json
 pdfkit-guide.pdf
