@@ -1,62 +1,31 @@
-# pdfkit-table-ts
+## pdfkit-table-ts is now:
+# pdfkit-table
 
-TypeScript - Helps to draw informations in simple tables using pdfkit. #server-side. Generate pdf tables with javascript (PDFKIT plugin) 
 
-```js
-const fs = require("fs");
-const { PDFDocument } = require("pdfkit-table-ts");
 
-const let = new PDFDocument({
-  margin: 30, 
-});
+> 
+> **`pdfkit-table-ts` has been deprecated and will not receive any further updates, bug fixes, or security patches.**
+>
+> ### Please migrate to [`pdfkit-table`](https://www.npmjs.com/package/pdfkit-table)
+>
+> [`pdfkit-table`](https://www.npmjs.com/package/pdfkit-table) is the actively maintained successor — written in TypeScript, with a richer API, better performance, and ongoing support.
+>
+> **Repository:** https://github.com/natancabral/pdfkit-table  
+> **npm:** https://www.npmjs.com/package/pdfkit-table
 
-;(async function(){
- 
-  // to save on server
-  doc.pipe(fs.createWriteStream("./docment.pdf"));
+## Migration to:
 
-  // -----------------------------------------------------------------------------------------------------
-  // Simple Table with Array
-  // -----------------------------------------------------------------------------------------------------
-  const table = {
-    headers: ["Country Country Country", "Conversion rate", "Trend"],
-    rows: [
-      ["Switzerland", "12%", "+1.12%"],
-      ["France", "67%", "-0.98%"],
-      ["England", "33%", "+4.44%"],
-      ["England of England of England", "33%", "+4.44%"],
-      ["Switzerland", "12%", "+1.12%"],
-      ["France", "67%", "-0.98%"],
-      ["England", "33%", "+4.44%"],
-      ["England of England of England", "33%", "+4.44%"],
-      ["Switzerland", "12%", "+1.12%"],
-      ["France", "67%", "-0.98%"],
-      ["England", "33%", "+4.44%"],
-      ["England of England of England", "33%", "+4.44%"],
-      ["Switzerland", "12%", "+1.12%"],
-      ["France", "67%", "-0.98%"],
-      ["England", "33%", "+4.44%"],
-      ["England of England of England", "33%", "+4.44%"],
-      ["Switzerland", "12%", "+1.12%"],
-      ["France", "67%", "-0.98%"],
-    ],
-  };
+<div>
+          <a href="https://www.npmjs.com/package/pdfkit-table">
+            <img src="https://img.shields.io/badge/npm-pdfkit--table-red?style=for-the-badge&logo=npm" alt="pdfkit-table on npm"/>
+          </a>
+          &nbsp;
+          <a href="https://github.com/natancabral/pdfkit-table">
+            <img src="https://img.shields.io/badge/GitHub-pdfkit--table-black?style=for-the-badge&logo=github" alt="pdfkit-table on GitHub"/>
+          </a>
+</div>
 
-  const options = {
-    width: 300,
-    x: 150,
-    y: 100,
-    padding: {
-      top: 1, bottom: 1, left: 5, right: 5, 
-    },
-  };
 
-  await doc.table(table, options);
-  doc.end();
- 
-})();
-
-```
 
 ## License
 
